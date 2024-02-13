@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Form</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="orderget.html">Shop Manage</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="orderget.html">Orders</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="orderdelete.html">OrderCancel</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="getmeth.html">Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="productpost.html">ProductAdd</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="deletemeth.html">ProductDelete</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container mt-5">
+    <h2>Product To Add</h2>
+    <form id="productForm">
+      <div class="form-group">
+        <label for="id">ID</label>
+        <input type="number" class="form-control" id="id" required>
+      </div>
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" id="description" required>
+      </div>
+      <div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" class="form-control" id="price" required>
+      </div>
+      <div class="form-group">
+        <label for="image">Image</label>
+        <input type="file" class="form-control-file" id="image" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+
+  <!-- Bootstrap JS and Custom JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    document.getElementById('productForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    const formData = new FormData();
+    //formData.append('id', document.getElementById('id').value);
+    formData.append('name', document.getElementById('name').value);
+    formData.append('description', document.getElementById('description').value);
+    formData.append('price', document.getElementById('price').value);
+    
+    try {
+        // Send form data to API endpoint 1
+        const response1 = await fetch('http://localhost:8080/http://localhost:33523/api/product', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
+        });
+
+        if (!response1.ok) {
+        throw new Error('Failed to upload data');
+        }
+
+        // Send image to API endpoint 2
+        const imageFormData = new FormData();
+        //const fileName = "${document.getElementById('name').value}";
+        // ORDERS MATTER HERE!!!!!!!!!!!
+        imageFormData.append('filename', document.getElementById('name').value);
+        imageFormData.append('image', document.getElementById('image').files[0]);      
+
+        const response2 = await fetch('http://localhost:3000/upload', {
+        method: 'POST',
+        body: imageFormData
+        });
+
+        if (!response2.ok) {
+        throw new Error('Failed to upload image');
+        }
+
+        alert('Data and image uploaded successfully!');
+        document.getElementById('productForm').reset();
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to upload data and/or image');
+    }
+    });
+  </script>
+</body>
+</html>
